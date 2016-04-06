@@ -5,10 +5,10 @@
   <%= @post.title %>
 </p>
 
-<p>
   <strong>Description:</strong>
-  <%= @post.description %>
-</p>
+  <%= @post.description.to_sentences.each do |sentence| %>
+    <p><%= sentence %> - <%= sentence.length %></p>
+  <% end %>
 
 <%= link_to 'Edit', edit_post_path(@post) %> |
 <%= link_to 'Back', posts_path %>
