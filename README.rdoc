@@ -1,28 +1,44 @@
 == README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* To install and run this app follow these steps
 
-Things you may want to cover:
+Clone the application:
+git clone https://github.com/rubydog/sample_app.git
 
-* Ruby version
+swtich to sample_app directory
+cd sample_app
 
-* System dependencies
+install dependecies
+bundle install
 
-* Configuration
+setup database
+rake db:setup
 
-* Database creation
+start web server
+rails server
 
-* Database initialization
+----
+This project tries to explain how to setup HTTP based testing in rails project. The idea is simple and straight forward and could be easily migrated into other language/frameworks
 
-* How to run the test suite
+Its a good practice to have its own folder for http requests based test in test directory. In this example you will find all the http based tests in http_request folder.
 
-* Services (job queues, cache servers, search engines, etc.)
+I'm creating a seperate file for each major end point, You will find tests related to /posts pages in post_test.rb file.
 
-* Deployment instructions
+We can divide our tests in three parts:
 
-* ...
+First we make list of all GET routes and test those by sending http request to each one of them and follow same process for other HTTP VERBS - POST, PUT, etc
 
+Second we can check for specific text on page by parsing response body.
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+Third and rather important one which cannot be acheived by traditional unit test is testing if pages are rendered across all the actual user data in database (You will have to take dump of production database on local machine to test this). There are often edge cases where the code might fail on some specific kind of user data. With these tests you can completely eliminate failures for current production data.
+
+Following test is acheiveing that in the post_test. Its checking if /post/:id page is rendered for all the posts and returning the array of post id for which page was not rendered.
+
+ids = Post.all.select { |post| `curl -s -o /dev/null -w "%{http_code}" #{Rails.application.routes.url_helpers.post_url(post, host: 'localhost', port: 3000)
+}`.to_i != 200}.map(&:id)
+
+---- 
+You'll have to run local web server to run this tests. To run the tests in this project switch to http_request directory inside test directory and run ruby file.
+
+ruby post_test.rb
+
