@@ -10,5 +10,7 @@
     <p><%= sentence %> - <%= sentence.length %></p>
   <% end %>
 
+<strong>Status:</strong><%= @post.active? ? 'Active' : 'Disabled' %>
+
 <%= link_to 'Edit', edit_post_path(@post) %> |
 <%= link_to 'Back', posts_path %>
